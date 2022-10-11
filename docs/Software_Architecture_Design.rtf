@@ -1,0 +1,26 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2638
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww28300\viewh17700\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Software Architecture Design \
+\
+Goal:\
+	Construct a platform by which users will be able to set up NFT trackers in the form of cron jobs. Via a user interface, a user is able to specify an x amount of details about what kind of an NFT tracker they are looking for and how they want the job to be done. The job is then run indefinately, alerting the user via email when specified conditions are met. Cron jobs need to be very scalable and manageable by users. There can be multiple jobs per user. \
+\
+Proposal : \
+	Idea: Provision jobs in the GoogleCloudScheduler via Python SDK. The job target will be a google cloud function URL, representing one of the templates \
+	Qs Unanswered: What is AppEngine vs HTTP job? \
+			      Can I also dynamically interact with those endpoints via code? \
+                                       Which user interface ?\
+	References: https://stackoverflow.com/questions/62013163/add-body-to-a-cloud-scheduler-request-using-the-python-api\
+		          https://cloud.google.com/python/docs/reference\
+		          invoking a function https://console.cloud.google.com/functions/details/us-central1/function-1?env=gen1&project=nftzombies&tab=testing.   https://github.com/GoogleCloudPlatform/functions-framework-python\
+		          R support https://code.markedmondson.me/googleCloudRunner/reference/cr_run_schedule_http.html\
+\
+\
+\
+\
+	}

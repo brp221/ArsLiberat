@@ -1,0 +1,35 @@
+
+NOTES: 
+    Everything is relative to the moment that our platform client submits a request. Price, last offer, 
+    etc... is captured and sent in the request so that proper events can be carried out. 
+
+
+1. Motivated by price
+    User: "Hey when the price of this contract address drops to 6.5 alert me" 
+    req1 = {
+        "contract_addy": "x620b70123fb810f6c653da7644b5dd0b6312e4d8/4926", # space doodle 
+        "email_address": "brp221@lehigh.edu", # or user address
+        "metadata":{
+            "frozen_price": 6.911,
+            "desired_price": 6.5   or 10 %
+        }
+    }
+
+2. Motivated by creator releasing new content ? 
+    User: "Hey when this creator releases something new notify me"
+    ~ requires simple data comparison ~
+    req1 = {
+        "account_address": "0x30B5daa174E40D0985E7bef113f3F5d0a056Cd5b", # space doodle 
+        "email_address": "brp221@lehigh.edu",
+        "date": datetime.today() # made by backend node 
+    }
+
+
+3. Motivated by offer movement 
+    User: "Hey notify me when this NFT gets a new offer" 
+    ~ use OpenSeaDevelopers API ~
+    req1 = {
+        "account_address": "0x30B5daa174E40D0985E7bef113f3F5d0a056Cd5b", # space doodle 
+        "email_address": "brp221@lehigh.edu",
+        "OffersSnapshot" : offer_id (somehow)
+    }

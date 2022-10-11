@@ -1,0 +1,111 @@
+const express = require('express');
+const collectionRouter = express.Router();
+const https =require("https")
+const sdk = require('api')('@alchemy-docs/v1.0#prifwml92xcs7b');
+
+
+
+collectionRouter.get('/', async(req, res, next) => {
+    endpoint='https://svc.blockdaemon.com/nft/v1/ethereum/mainnet/collections?verified=true&apiKey='+process.env.DAEMON_API_KEY
+    console.log(endpoint)
+    https.get(endpoint, (resp) => {
+      let data = '';
+      resp.on('data', (chunk) => {data += chunk;});
+
+      resp.on('end', () => {
+          const jsonObject = JSON.parse(data)["data"];                                               //convert into json object
+          var result = jsonObject.filter(obj => obj.asset_id == req.params["token_id"]);         //filter named json object 
+          res.status(201).json(result);
+          });
+    })
+    .on("error", (err) => {
+      console.log("Error: " + err.message);
+      res.status(404);
+    });
+
+    // retrieve media as well ? collection/beb2e33e-8470-5600-a740-787c8c367e65/logo.png those are separate calls so stache them 
+    // https://blockdaemon.com/documentation/ubiquity-api/nft-api/get-nft-media/
+});
+
+
+//fetches all nfts and their corresponding metadata (image + traits) 
+collectionRouter.get('/:collection_address/', async(req, res, next)=>{
+  const options = {
+    "method": "GET",
+    "hostname": "api.nftport.xyz",
+    "port": null,
+    "path": "/v0/nfts/"+req.params["collection_address"]+"?chain=ethereum&include=all",
+    "headers": {
+      "Content-Type": "application/json",
+      "Authorization": process.env.NFT_PORT_API_KEY
+    }
+  };
+  
+  https.get(options, (resp) => {
+    let data = '';
+    resp.on('data', (chunk) => {data += chunk;});
+
+    resp.on('end', () => {
+      console.log("data: ", data)
+      const result = JSON.parse(data)["nfts"];                                           //convert into json object
+      res.status(201).json(result);
+    });
+  })
+  .on("error", (err) => {
+    console.log("Error: " + err.message);
+    res.status(404);
+  });
+})
+
+//fetches all nfts and their corresponding metadata (image + traits) 
+collectionRouter.get('/:collection_address/metadata/', async(req, res, next)=>{
+  var header = "https://eth-mainnet.g.alchemy.com/nft/v2/"+process.env.ALCHEMY_API_KEY+ "/getContractMetadata?contractAddress="+req.params['collection_address']
+  console.log(header)
+  https.get(header, (resp) => {
+    let data = '';
+    resp.on('data', (chunk) => {data += chunk;});
+
+    resp.on('end', () => {
+      var result = JSON.parse(data);                                               //convert into json object
+      console.log(result)
+      res.status(201).json(result);
+    });
+  })
+  .on("error", (err) => {
+    console.log("Error: " + err.message);
+    res.status(404);
+  });
+})
+
+
+//fetches collcetion by search 
+collectionRouter.get('/:collection_address/search',async(req, res, next)=>{
+  // https://ubiquity.docs.blockdaemon.com/swagger-ui/#/NFT/Search%20NFT%20Collections
+  const options = {
+    "method": "GET",
+    "hostname": "api.nftscoring.com",
+    "port": null,
+    "path": "/api/v1/traits/floor/collection/?collection_contract="+req.params['contract_addy'],
+    "headers": {
+        "Content-Type": "application/json",
+        "Authorization": `Token ${process.env.NFT_SCORING_API_KEY }`
+    }
+  };    
+  https.get(options, (resp) => {
+      let data = '';
+      resp.on('data', (chunk) => {data += chunk;});
+
+      resp.on('end', () => {
+          const result = JSON.parse(data)["data"];                                               //convert into json object
+          res.status(201).json(result);
+          });
+  })
+  .on("error", (err) => {
+    console.log("Error: " + err.message);
+    res.status(404).send(err.message);
+  });
+})
+
+
+
+module.exports = collectionRouter;

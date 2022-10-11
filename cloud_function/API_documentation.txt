@@ -1,0 +1,14 @@
+
+NFT PORT :  https://docs.nftport.xyz/docs/nftport/ZG9jOjE5MzA4MjIy-welcome-to-nft-port-the-stripe-for-nf-ts
+
+
+NFT GO : https://docs.nftgo.io/reference/get_metrics_eth_v1_nft__contract_address___token_id__metrics_get-1
+
+
+BLOCKSPAN : https://docs.blockspan.com/reference/getcollectionpricesummary
+
+
+OPEN SEA DEV: https://docs.opensea.io/reference/api-overview
+-has offers  : https://docs.opensea.io/reference/retrieve-orders
+-awaiting API KEY
+

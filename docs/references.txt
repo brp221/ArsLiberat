@@ -1,0 +1,3 @@
+OPEN SEA : https://docs.opensea.io/reference/request-an-api-key
+
+METaMASK: https://docs.metamask.io/guide/ethereum-provider.html#properties executing trades ? 

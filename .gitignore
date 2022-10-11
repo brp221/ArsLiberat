@@ -3,8 +3,15 @@
 # dependencies
 NFT_Master___web_app___/node_modules
 NFT_Master___web_app___/.env
+NFT_Master___web_app___/firebase_credentials.json
+
 
 NFT_Master___web_app___/client/node_modules
+NFT_Master___web_app___/client/build
+
+cloud_function/__pycache__
+cloud_function/google_client_creds.json
+
 
 /.pnp
 .pnp.js
