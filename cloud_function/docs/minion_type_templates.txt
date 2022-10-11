@@ -1,0 +1,45 @@
+
+NOTES: 
+    *Everything is relative to the moment that our platform client submits a request. Price, last offer, 
+    etc... are captured in a snapshit json body and sent in the cron request so that proper events can be carried out. 
+
+
+1. Price
+User: "Hey when the listed price of this NFT drops  { to n || by n % } alert me" 
+req1 = {
+    "contract_addy"
+    "token_id"
+    "recipient_email"
+    "metadata":{
+        "frozen_price"
+        "drop_to": 
+        "drop_by":
+        "currency":
+    }
+}
+
+2. Motivated by creator releasing new content ? 
+User: "Hey when this creator/collection releases something new notify me"
+req1 = {
+    "creator_address"
+    "collection_address"
+    "recipient_email"
+    "captured_date" 
+}
+
+
+3. Motivated by New Value 
+User: "Hey when Alien Ape Collection releases something new and the listing price is x and the rarity ranking is y notify me"
+req = {tbd}
+
+
+
+4. Motivated by offer movement 
+User: "Hey notify me when this NFT gets a new offer" 
+~ use OpenSeaDevelopers API ~
+req1 = {
+    "contract_addy"
+    "token_id"
+    "recipient_email"
+    "captured_date" 
+}

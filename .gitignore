@@ -11,7 +11,7 @@ NFT_Master___web_app___/client/build
 
 cloud_function/__pycache__
 cloud_function/google_client_creds.json
-
+cloud_function/.env
 
 /.pnp
 .pnp.js
