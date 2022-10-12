@@ -36,7 +36,7 @@ nftsRouter.get('/', async(req, res, next) => {
         return res.status(201).json(collection);
 });
 
-//get listings for said nft or collection ?
+//get specified nft
 nftsRouter.get('/:contract_addy/:token_id/', async(req, res, next) => {
 
     const options = {
@@ -67,7 +67,7 @@ nftsRouter.get('/:contract_addy/:token_id/', async(req, res, next) => {
 
 
 
-//get listings for said nft or collection ?
+//get listings for said nft 
 nftsRouter.get('/:contract_addy/:token_id/listings/', async(req, res, next) => {
 
     const options = {

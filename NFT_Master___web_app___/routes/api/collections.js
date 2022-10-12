@@ -15,7 +15,7 @@ collectionRouter.get('/', async(req, res, next) => {
       resp.on('end', () => {
           const jsonObject = JSON.parse(data)["data"];                                               //convert into json object
           var result = jsonObject.filter(obj => obj.asset_id == req.params["token_id"]);         //filter named json object 
-          res.status(201).json(result);
+          res.status(200).json(result);
           });
     })
     .on("error", (err) => {
@@ -48,7 +48,7 @@ collectionRouter.get('/:collection_address/', async(req, res, next)=>{
     resp.on('end', () => {
       console.log("data: ", data)
       const result = JSON.parse(data)["nfts"];                                           //convert into json object
-      res.status(201).json(result);
+      res.status(200).json(result);
     });
   })
   .on("error", (err) => {
@@ -56,6 +56,7 @@ collectionRouter.get('/:collection_address/', async(req, res, next)=>{
     res.status(404);
   });
 })
+
 
 //fetches all nfts and their corresponding metadata (image + traits) 
 collectionRouter.get('/:collection_address/metadata/', async(req, res, next)=>{
@@ -68,7 +69,36 @@ collectionRouter.get('/:collection_address/metadata/', async(req, res, next)=>{
     resp.on('end', () => {
       var result = JSON.parse(data);                                               //convert into json object
       console.log(result)
-      res.status(201).json(result);
+      res.status(200).json(result);
+    });
+  })
+  .on("error", (err) => {
+    console.log("Error: " + err.message);
+    res.status(404);
+  });
+})
+
+
+//fetches sales stats for nft 
+collectionRouter.get('/:collection_address/sales_stats', async(req, res, next)=>{
+  const options = {
+    "method": "GET",
+    "hostname": "api.nftport.xyz",
+    "port": null,
+    "path": "/v0/transactions/stats/"+req.params["collection_address"]+"?chain=ethereum",
+    "headers": {
+      "Content-Type": "application/json",
+      "Authorization": process.env.NFT_PORT_API_KEY
+    }
+  };
+  https.get(options, (resp) => {
+    let data = '';
+    resp.on('data', (chunk) => {data += chunk;});
+
+    resp.on('end', () => {
+      console.log("data: ", data)
+      const result = JSON.parse(data)["statistics"];                                           //convert into json object
+      res.status(200).json(result);
     });
   })
   .on("error", (err) => {
@@ -97,7 +127,7 @@ collectionRouter.get('/:collection_address/search',async(req, res, next)=>{
 
       resp.on('end', () => {
           const result = JSON.parse(data)["data"];                                               //convert into json object
-          res.status(201).json(result);
+          res.status(200).json(result);
           });
   })
   .on("error", (err) => {
@@ -105,6 +135,71 @@ collectionRouter.get('/:collection_address/search',async(req, res, next)=>{
     res.status(404).send(err.message);
   });
 })
+
+
+//fetches sales stats for nft 
+collectionRouter.get('/:collection_address/transactions', async(req, res, next)=>{
+
+  const options = {
+    "method": "GET",
+    "hostname": "api.nftport.xyz",
+    "port": null,
+    "path": "/v0/transactions/nfts/"+req.params["collection_address"]+"?chain=ethereum&type=sale",
+    "headers": {
+      "Content-Type": "application/json",
+      "Authorization": process.env.NFT_PORT_API_KEY
+    }
+  };
+  https.get(options, (resp) => {
+    let data = '';
+    resp.on('data', (chunk) => {data += chunk;});
+
+    resp.on('end', () => {
+      console.log("data: ", data)
+      const result = JSON.parse(data)["transactions"];     //filter out anything other than sale; what is cancel_list?
+      res.status(200).json(result);
+    });
+  })
+  .on("error", (err) => {
+    console.log("Error: " + err.message);
+    res.status(404);
+  });
+})
+
+
+//fetches all unique owners of a collection
+collectionRouter.get('/:collection_address/owners', async(req, res, next)=>{
+
+
+  const options = {
+    method: 'GET',
+    url: "https://deep-index.moralis.io/api/v2/nft/"+req.params["collection_address"]+"/owners",
+    params: {chain: 'eth', format: 'decimal'},
+    headers: {
+      accept: 'application/json',
+      'X-API-Key': process.env.MORALIS_API_KEY
+    }
+  };
+  
+  https.get(options, (resp) => {
+    let data = '';
+    resp.on('data', (chunk) => {data += chunk;});
+
+    resp.on('end', () => {
+      console.log("data: ", data)
+      const result = JSON.parse(data)["result"];     //filter out anything other than sale; what is cancel_list?
+      res.status(200).json(result);
+    });
+  })
+  .on("error", (err) => {
+    console.log("Error: " + err.message);
+    res.status(404);
+  });
+})
+
+
+
+
 
 
 

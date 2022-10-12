@@ -1,5 +1,5 @@
 import React, { useState,useEffect  } from 'react';
-import { useNavigate  } from "react-router-dom";
+import { useLocation  } from "react-router-dom";
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@mui/material/Box';
@@ -21,6 +21,8 @@ const useStyles = makeStyles({
 
 export default function MinionOrder() {
   const classes = useStyles();
+  const location = useLocation()
+   // data will be shared by navigate
   const [minionType, setminionType] = useState('type 1');
   const [minion, setMinion] = useState({});  //set by the child components 
   
@@ -30,6 +32,7 @@ export default function MinionOrder() {
   },[minion]);
 
   const changeMinionType = (event) => {
+    console.log("passed info is ", location.state)
     setMinion({})  //when the minionType changes, also reset the minion state >:)
     setminionType(event.target.value);
   };

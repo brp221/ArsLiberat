@@ -12,6 +12,15 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+
+
 // import Collapse from '@mui/material/Collapse';
 // import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import IconButton from '@mui/material/IconButton';
@@ -59,15 +68,15 @@ export default function Card__NFT() {   //{NFT}
     const {collection_id, token_id} = useParams()
     const navigate = useNavigate();
 
-    //probably multiple states each a separate topic; listings, image, rarity ... , each their own call ofc 
+    //probably multiple states each a separate topic; listings, image, traitData ... , each their own call ofc 
     const [nft, setnft] = useState([]);
-    const [listings, setListings] = useState([]);       //also has a useful rarity ranking among the whole collection
-    const [rarity, setRarity] = useState([]); 
+    const [listings, setListings] = useState(false);       //also has a useful traitData ranking among the whole collection
+    const [traitData, setTraitData] = useState([]); 
     const classes = useStyles();
 
     useEffect(()=>{
         const fetchnft = async () =>{
-            if(nft.length==0){
+            if(nft.length==0){                              //nft port
                 const res = await axios.get("http://localhost:9000/api/NFTs/"+collection_id + "/" + token_id + "/");
                 // const data = await res.json();
                 console.log(res["data"]);
@@ -79,15 +88,31 @@ export default function Card__NFT() {   //{NFT}
 
     useEffect(()=>{
         const fetchListing = async () => {
-            if(listings.length==0){
+            if(!listings){                         // nft scoring
                 const res = await axios.get("http://localhost:9000/api/NFTs/"+collection_id + "/" + token_id + "/listings/");
                 // const data = await res.json();
-                console.log(res["data"]);
-                setListings(res["data"]);
+                if(res["data"].length > 0){setListings(res["data"]);}
             }
         }
         fetchListing().catch(console.error);
     },[listings])
+
+    useEffect(()=>{
+        const fetchTraitData= async () => {
+            if(traitData.length==0){                         // alchemy
+                const res = await axios.get("http://localhost:9000/api/NFTs/"+collection_id + "/" + token_id + "/rarity/");
+                // const data = await res.json();
+                console.log(res["data"]);
+                var traitDataArray = [];
+                for (let index = 0; index < res["data"].length; index++) {
+                    traitDataArray.push(res["data"][index])
+                }
+                setTraitData(traitDataArray);
+            }
+        }
+        fetchTraitData().catch(console.error);
+    },[traitData])
+
 
 
     // function that switches the route to inspect singular collection request
@@ -96,9 +121,6 @@ export default function Card__NFT() {   //{NFT}
         let path = "art/:collection_id/" + collection_id;
         window.location.href = path
     };
-//   const handleExpandClick = () => {
-//     setExpanded(!expanded);
-//   };
 
   return (
     <>{
@@ -119,32 +141,12 @@ export default function Card__NFT() {   //{NFT}
             {nft.metadata.description}
             </Typography>
         </CardContent>
-        <Button onClick={() => navigate("/order-alert")}>Create Alert</Button>
-        {/*<CardActions disableSpacing>
-            <IconButton aria-label="add to favorites"><FavoriteIcon /></IconButton>
-            <IconButton aria-label="share"><ShareIcon /></IconButton>
-        </CardActions>
-        
-             <ExpandMore
-            expand={expanded}
-            onClick={handleExpandClick}
-            aria-expanded={expanded}
-            aria-label="show more"
-            >
-            <ExpandMoreIcon />
-            </ExpandMore>
-        </CardActions>
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
-            <CardContent>
-            <Typography paragraph>
-                Here is some cool metadata on the collection
-            </Typography>
-            </CardContent>
-        </Collapse> */}
+        <Button onClick={() => navigate("/order-alert", {state: "someData"})}>Create Alert</Button>
+
     </Card>
 
     <List>
-        {listings.length!=0 && listings.map((listing) => (
+        {listings && listings.map((listing) => (
         <ListItem key={listing.marketplace}>
             <ListItemText
                 primary={listing.marketplace}
@@ -153,6 +155,35 @@ export default function Card__NFT() {   //{NFT}
         </ListItem>
         ))}
     </List>
+    
+    {
+        traitData.length>0 &&
+        <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Trait</TableCell>
+              <TableCell align="right">Value</TableCell>
+              <TableCell align="right">Prevalence&nbsp;(g)</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {traitData.map((row) => (
+              <TableRow
+                key={row.value}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">{row.trait_type}</TableCell>
+                <TableCell align="right">{row.value}</TableCell>
+                <TableCell align="right">{row.prevalence}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    }
+   
+
     </>
     }
      
@@ -202,3 +233,24 @@ export default function Card__NFT() {   //{NFT}
 //         </CardContent>
 //     </Card>
 //   );
+        {/*<CardActions disableSpacing>
+            <IconButton aria-label="add to favorites"><FavoriteIcon /></IconButton>
+            <IconButton aria-label="share"><ShareIcon /></IconButton>
+        </CardActions>
+        
+             <ExpandMore
+            expand={expanded}
+            onClick={handleExpandClick}
+            aria-expanded={expanded}
+            aria-label="show more"
+            >
+            <ExpandMoreIcon />
+            </ExpandMore>
+        </CardActions>
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+            <CardContent>
+            <Typography paragraph>
+                Here is some cool metadata on the collection
+            </Typography>
+            </CardContent>
+        </Collapse> */}

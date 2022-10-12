@@ -40,4 +40,4 @@ app.get('*', (req, res) => {
     res.sendFile(index_dir);
     });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT} \ndirectory is ${__dirname}\nsec_dir is ${index_dir}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT} \n`));
