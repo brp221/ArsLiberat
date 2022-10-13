@@ -1,8 +1,7 @@
 const express = require('express');
 const collectionRouter = express.Router();
 const https =require("https")
-const sdk = require('api')('@alchemy-docs/v1.0#prifwml92xcs7b');
-
+const dfd = require("danfojs-node")
 
 
 collectionRouter.get('/', async(req, res, next) => {
@@ -96,8 +95,8 @@ collectionRouter.get('/:collection_address/sales_stats', async(req, res, next)=>
     resp.on('data', (chunk) => {data += chunk;});
 
     resp.on('end', () => {
-      console.log("data: ", data)
       const result = JSON.parse(data)["statistics"];                                           //convert into json object
+      console.log("result: ",result)
       res.status(200).json(result);
     });
   })
@@ -136,9 +135,39 @@ collectionRouter.get('/:collection_address/search',async(req, res, next)=>{
   });
 })
 
+//fetches all unique owners of a collection
+collectionRouter.get('/:collection_address/owners/', async(req, res, next)=>{
+  const options = {
+    method: 'GET',
+    hostname: 'deep-index.moralis.io',
+    port: null,
+    path: "/api/v2/nft/"+req.params["collection_address"]+"/owners?chain=eth&format=decimal",
+    headers: {
+      accept: 'application/json',
+      'X-API-Key': process.env.MORALIS_API_KEY
+    }
+  };
+  
+  https.get(options, (resp) => {
+    let data = '';
+    resp.on('data', (chunk) => {data += chunk;});
+
+    resp.on('end', () => {
+      const result = JSON.parse(data,(k, v) => k != 'metadata' ? v : void 0)["result"];    
+      let df = new dfd.DataFrame(result)
+      let topOwners = df.groupby(["owner_of"]).col(["token_id"]).count().sortValues("token_id_count", {ascending:false})
+      topOwners.print()
+      res.status(200).json(dfd.toJSON(topOwners));
+    });
+  })
+  .on("error", (err) => {
+    console.log("Error: " + err.message);
+    res.status(404);
+  });
+})
 
 //fetches sales stats for nft 
-collectionRouter.get('/:collection_address/transactions', async(req, res, next)=>{
+collectionRouter.get('/:collection_address/transactions/', async(req, res, next)=>{
 
   const options = {
     "method": "GET",
@@ -167,35 +196,7 @@ collectionRouter.get('/:collection_address/transactions', async(req, res, next)=
 })
 
 
-//fetches all unique owners of a collection
-collectionRouter.get('/:collection_address/owners', async(req, res, next)=>{
 
-
-  const options = {
-    method: 'GET',
-    url: "https://deep-index.moralis.io/api/v2/nft/"+req.params["collection_address"]+"/owners",
-    params: {chain: 'eth', format: 'decimal'},
-    headers: {
-      accept: 'application/json',
-      'X-API-Key': process.env.MORALIS_API_KEY
-    }
-  };
-  
-  https.get(options, (resp) => {
-    let data = '';
-    resp.on('data', (chunk) => {data += chunk;});
-
-    resp.on('end', () => {
-      console.log("data: ", data)
-      const result = JSON.parse(data)["result"];     //filter out anything other than sale; what is cancel_list?
-      res.status(200).json(result);
-    });
-  })
-  .on("error", (err) => {
-    console.log("Error: " + err.message);
-    res.status(404);
-  });
-})
 
 
 

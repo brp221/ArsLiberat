@@ -1,4 +1,4 @@
-const { json } = require('express');
+// const { json } = require('express');
 const express = require('express');
 const nftsRouter = express.Router();
 const https =require("https")
@@ -108,7 +108,13 @@ nftsRouter.get('/:contract_addy/:token_id/rarity/', async(req, res, next) => {
         resp.on('data', (chunk) => {data += chunk;});
 
         resp.on('end', () => {
-            var result = JSON.parse(data);                                               //convert into json object
+            try {
+                var result = JSON.parse(data);       
+            } catch (error) {
+                console.log("ERROR CAUGHT: ", error)
+                res.status(204).send([]);
+            }
+            //convert into json object
             console.log(result)
             res.status(201).json(result);
             });

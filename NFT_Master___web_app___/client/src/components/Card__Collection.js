@@ -65,13 +65,29 @@ export default function Card__Collection({collection}) {   //{collection}
     var classes = useStyles();
     const {collection_id} = useParams()
     var [collection, setCollection] = useState();
+    var [owners, setOwners] = useState();
+    var [sales, setSales] = useState();
 
     useEffect(()=>{
-      // const fetchCollection = async() =>{
-      //   const response = await axios.get("http://localhost:9000/api/"+collection_id);
-      //   setCollection(response["data"]);
-      // }
-      // fetchCollection()
+      const fetchCollection = async() =>{
+        const response = await axios.get("http://localhost:9000/api/collections/"+collection_id + "/metadata/");
+        console.log("collections: ", response["data"])
+        setCollection(response["data"]);
+      }
+      const fetchOwners= async() =>{
+        const response = await axios.get("http://localhost:9000/api/collections/"+collection_id + "/owners/");
+        var topOwners = response["data"].slice(0,4)
+        console.log("owners: ", topOwners)
+        setOwners(topOwners);
+      }
+      const fetchSales= async() =>{
+        const response = await axios.get("http://localhost:9000/api/collections/"+collection_id + "/sales_stats/");
+        console.log("sales: ", response["data"])
+        setSales(response["data"]);
+      }
+      fetchCollection();
+      fetchOwners();
+      fetchSales();
     }, [] )
 
     const routeChange = (collection_id) => {
@@ -85,22 +101,23 @@ export default function Card__Collection({collection}) {   //{collection}
 //   };
 
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <>
+    {
+      collection && <Card sx={{ maxWidth: 345 }}>
       <CardHeader
-        avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">CollectionAuthor</Avatar>}
-        action={
-          <IconButton aria-label="settings"><MoreVertIcon /></IconButton>
-        }
-        title="CollectionTitle"
-        subheader="September 14, 2016"
+        // action={
+        //   <IconButton aria-label="settings"><MoreVertIcon /></IconButton>
+        // }
+        title={collection.contractMetadata.name}
+        subheader={collection.owner}
       />
       <CardMedia
         component="img" height="194"
-        image="/static/images/cards/paella.jpg" alt="Paella dish"
+        image={collection.contractMetadata.openSea.imageUrl} alt="Paella dish"
       />
       <CardContent>
         <Typography variant="body2" color="text.secondary">
-          bla bla here goes the collection discription if one exist also add sales data ? 
+        {collection.contractMetadata.openSea.description}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
@@ -124,6 +141,9 @@ export default function Card__Collection({collection}) {   //{collection}
         </CardContent>
       </Collapse> */}
     </Card>
+    }
+    </>
+    
   );
 }
 

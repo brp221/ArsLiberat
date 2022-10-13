@@ -1,1 +1,3 @@
 JIRA https://nft-zombies.atlassian.net/jira/software/projects/NM/boards/1
+
+HTTP Codez https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#successful_responses
