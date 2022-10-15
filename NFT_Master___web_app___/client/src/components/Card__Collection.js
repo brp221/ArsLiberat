@@ -5,6 +5,8 @@ import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
+import { Button } from "@mui/material";
+
 import Collapse from '@mui/material/Collapse';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
@@ -17,7 +19,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { makeStyles } from '@material-ui/core/styles';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 // const ExpandMore = styled((props) => {
 // const { expand, ...other } = props;
@@ -63,6 +65,7 @@ const useStyles =  makeStyles((theme) =>({
   
 export default function Card__Collection({collection}) {   //{collection}
     var classes = useStyles();
+    const navigate= useNavigate()
     const {collection_id} = useParams()
     var [collection, setCollection] = useState();
     var [owners, setOwners] = useState();
@@ -103,7 +106,9 @@ export default function Card__Collection({collection}) {   //{collection}
   return (
     <>
     {
-      collection && <Card sx={{ maxWidth: 345 }}>
+      collection && 
+      <>
+      <Card sx={{ maxWidth: 345 }}>
       <CardHeader
         // action={
         //   <IconButton aria-label="settings"><MoreVertIcon /></IconButton>
@@ -141,6 +146,9 @@ export default function Card__Collection({collection}) {   //{collection}
         </CardContent>
       </Collapse> */}
     </Card>
+    <Button onClick={() => navigate("/order-alert", {state: "someData"})}>Create Alert</Button>
+    <Button onClick={() => navigate("/explore", {state: "someData"})}>Explore </Button>
+    </>
     }
     </>
     

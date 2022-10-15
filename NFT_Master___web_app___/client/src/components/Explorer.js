@@ -10,47 +10,19 @@ import axios from "axios";
 // import Logout from "./LogOut";
 // import Filter from "./Filter";
 import Grid from "@material-ui/core/Grid"
-import Card__Collection from "./Card__Collection"
-
-// //component styling to be used in the return function
-// const useStyles = makeStyles((theme) =>({
-//   root: {
-//     width: "97%",
-//     marginLeft: '1.5%',
-//     marginRight: '1.5%',
-//   },
-//   createServiceButton:{
-//     width: "170px",
-//     height: "50px",
-//   },
-//   serviceBar: {
-//     width: "100%",
-//     display: "flex",
-//     alignItems: "flex-start",
-//     justifyContent: "space-around",
-//     marginTop: "0.4%",
-//     marginBottom: "15px",
-//     [theme.breakpoints.up("sm")]: {
-//       flexDirection: "column",
-//       alignItems: "center",
-//     },
-//   },
-// }));
-
-
+import CardSimple__Collection from "./CardSimple__Collection"
 
 export default function Explorer() {
 
   // const classes = useStyles();
-  const [collectionList, setCollectionList] = useState([]);
+  const [assetList, setAssetList] = useState([]);
 
   useEffect(() => {
     console.log("use Effect")
     const fetchData = async () => {
-      const result = await axios.get('http://localhost:9000/api/collections');
+      const result = await axios.get('http://localhost:9000/api/collections/');
       console.log(result.data);
-      setCollectionList(result["data"]);
-      console.log("collectionList: ", collectionList)
+      setAssetList(result.data);
     };
     fetchData();
   },[]);
@@ -96,11 +68,11 @@ return(
             heading="OS"
           /> */}
         </Box>
-    <Grid container spacing={3} >  {/**className={classes.root} */}
-        {collectionList.length!=0 && collectionList.map((collection) => (
-        <Grid container item xs={3} spacing={0}>
-            <Card__Collection key={collection.id} />    {/**collection={collection} unnecesarry ? or faster ? */}
-        </Grid>
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 3, sm: 4, md: 4}}>{/**className={classes.root} */}
+        {assetList && assetList.map((asset) => (
+          <Grid item xs={3}>
+              <CardSimple__Collection key={asset["created_date"]} collection={asset} />    {/**collection={collection} unnecesarry ? or faster ? */}
+          </Grid>
         ))}  
     </Grid>
     </>

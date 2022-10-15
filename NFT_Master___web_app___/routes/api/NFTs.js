@@ -3,38 +3,40 @@ const express = require('express');
 const nftsRouter = express.Router();
 const https =require("https")
 
+
+
 // https://docs.alchemy.com/reference/notify-api-quickstart
 
 
-//get all nfts
+//get all nfts WACK AFF
 nftsRouter.get('/', async(req, res, next) => {
-    console.log(process.env.NFT_PORT_API_KEY )
     const options = {
         "method": "GET",
         "hostname": "api.nftport.xyz",
         "port": null,
-        "path": "/v0/nfts?chain=ethereum",
+        "path": "/v0/nfts?chain=ethereum&include=metadata",
         "headers": {
-        "Content-Type": "application/json",
-        "Authorization": process.env.NFT_PORT_API_KEY 
+            "Content-Type": "application/json",
+            "Authorization": process.env.NFT_PORT_API_KEY 
         }
     };
   
-    const api_req = https.request(options, function (res) {
+    const api_req = https.request(options, function (api_resp) {
         const chunks = [];
-        res.on("data", function (chunk) {
-            chunks.push(chunk);
+      
+        api_resp.on("data", function (chunk) {
+          chunks.push(chunk);
         });
-    
-        res.on("end", function () {
-        const body = Buffer.concat(chunks);
-        console.log(body.toString());
+      
+        api_resp.on("end", function () {
+          const body = Buffer.concat(chunks);
+          res.status(201).json(body.toString());
         });
-    });
-  
-    api_req.end();
-        return res.status(201).json(collection);
+      });
+      
+      api_req.end();
 });
+
 
 //get specified nft
 nftsRouter.get('/:contract_addy/:token_id/', async(req, res, next) => {

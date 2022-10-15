@@ -2,30 +2,61 @@ const express = require('express');
 const collectionRouter = express.Router();
 const https =require("https")
 const dfd = require("danfojs-node")
+// const axios = require('axios').default;
+var request = require('request');
 
 
-collectionRouter.get('/', async(req, res, next) => {
-    endpoint='https://svc.blockdaemon.com/nft/v1/ethereum/mainnet/collections?verified=true&apiKey='+process.env.DAEMON_API_KEY
-    console.log(endpoint)
-    https.get(endpoint, (resp) => {
-      let data = '';
-      resp.on('data', (chunk) => {data += chunk;});
-
-      resp.on('end', () => {
-          const jsonObject = JSON.parse(data)["data"];                                               //convert into json object
-          var result = jsonObject.filter(obj => obj.asset_id == req.params["token_id"]);         //filter named json object 
-          res.status(200).json(result);
-          });
-    })
-    .on("error", (err) => {
-      console.log("Error: " + err.message);
-      res.status(404);
+collectionRouter.get('/', async(req,res)=>{
+  const options = {
+    method: 'GET',
+    hostname: 'api.opensea.io',
+    port: null,
+    path: '/api/v1/collections?offset=0&limit=140',
+    headers: {
+      accept: 'application/json'
+    }
+  };
+  
+  https.get(options, (resp) => {
+    const chunks = [];
+  
+    resp.on('data', function (chunk) {
+      chunks.push(chunk);
     });
-
-    // retrieve media as well ? collection/beb2e33e-8470-5600-a740-787c8c367e65/logo.png those are separate calls so stache them 
-    // https://blockdaemon.com/documentation/ubiquity-api/nft-api/get-nft-media/
+  
+    resp.on('end', function () {
+      const body = Buffer.concat(chunks);
+      console.log(body.toString());
+      jsonObject = JSON.parse(body.toString())["collections"];
+      const filtered = jsonObject.filter(collection => collection.image_url !== null || collection.banner_image_url!== null);
+      res.status(200).json(filtered);
+    });
+  });
 });
 
+
+collectionRouter.get('/trending/', async(req, res, next) => {
+
+  var options = {
+      url: 'https://api.rarify.tech/data/contracts',
+      headers: {
+          'Authorization': 'Bearer d0a569d1-f90c-4789-817d-09c1bc024436',
+          'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: 'insights_trends.period=90d&include=insights_trends&sort=-insights_trends.volume_change_percent' //&page[limit]=6
+  };
+
+  function callback(error, response, body) {
+      if (!error && response.statusCode == 200) {
+        jsonObject = JSON.parse(body)["data"]
+        const filtered = jsonObject.filter(collection => collection.attributes.image_url !== "");
+        console.log("filtered : ", filtered)
+        res.status(200).json(filtered);
+      }
+  }
+
+  request(options, callback);
+});
 
 //fetches all nfts and their corresponding metadata (image + traits) 
 collectionRouter.get('/:collection_address/', async(req, res, next)=>{
@@ -55,7 +86,6 @@ collectionRouter.get('/:collection_address/', async(req, res, next)=>{
     res.status(404);
   });
 })
-
 
 //fetches all nfts and their corresponding metadata (image + traits) 
 collectionRouter.get('/:collection_address/metadata/', async(req, res, next)=>{
@@ -153,11 +183,18 @@ collectionRouter.get('/:collection_address/owners/', async(req, res, next)=>{
     resp.on('data', (chunk) => {data += chunk;});
 
     resp.on('end', () => {
-      const result = JSON.parse(data,(k, v) => k != 'metadata' ? v : void 0)["result"];    
-      let df = new dfd.DataFrame(result)
-      let topOwners = df.groupby(["owner_of"]).col(["token_id"]).count().sortValues("token_id_count", {ascending:false})
-      topOwners.print()
-      res.status(200).json(dfd.toJSON(topOwners));
+      try {
+        const result = JSON.parse(data,(k, v) => k != 'metadata' ? v : void 0)["result"];    //if metadata exists 
+        let df = new dfd.DataFrame(result)
+        df.print()
+        let topOwners = df.groupby(["owner_of"]).col(["token_id"]).count().sortValues("token_id_count", {ascending:false})
+        topOwners.print()   
+        res.status(200).json(dfd.toJSON(topOwners));
+      } 
+      catch (error) {
+          console.log("ERROR CAUGHT: ", error)
+          res.status(204).send([]);
+      }
     });
   })
   .on("error", (err) => {
@@ -196,7 +233,28 @@ collectionRouter.get('/:collection_address/transactions/', async(req, res, next)
 })
 
 
+collectionRouter.get('/wack/', async(req, res, next) => {
+  //the whole point of this is images ... 
+  endpoint='https://svc.blockdaemon.com/nft/v1/ethereum/mainnet/collections?verified=true&apiKey='+process.env.DAEMON_API_KEY
+  console.log(endpoint)
+  https.get(endpoint, (resp) => {
+    let data = '';
+    resp.on('data', (chunk) => {data += chunk;});
 
+    resp.on('end', () => {
+      const jsonObject = JSON.parse(data)["data"];                                               //convert into json object
+      var result = jsonObject.filter(obj => obj.asset_id == req.params["token_id"]);         //filter named json object 
+      res.status(200).json(result);
+      });
+  })
+  .on("error", (err) => {
+    console.log("Error: " + err.message);
+    res.status(404);
+  });
+
+  // retrieve media as well ? collection/beb2e33e-8470-5600-a740-787c8c367e65/logo.png those are separate calls so stache them 
+  // https://blockdaemon.com/documentation/ubiquity-api/nft-api/get-nft-media/
+});
 
 
 
