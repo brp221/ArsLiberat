@@ -129,25 +129,9 @@ export default function Card__Collection({collection}) {   //{collection}
         <IconButton aria-label="add to favorites"><FavoriteIcon /></IconButton>
         <IconButton aria-label="share"><ShareIcon /></IconButton>
       </CardActions>
-        {/* <ExpandMore
-          expand={expanded}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon />
-        </ExpandMore>
-      </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
-          <Typography paragraph>
-            Here is some cool metadata on the collection
-          </Typography>
-        </CardContent>
-      </Collapse> */}
     </Card>
-    <Button onClick={() => navigate("/order-alert", {state: "someData"})}>Create Alert</Button>
-    <Button onClick={() => navigate("/explore", {state: "someData"})}>Explore </Button>
+    <Button onClick={() => navigate("/order-alert", {state: {"collection": collection, "owners" : owners, "sales": sales }})}>Create Alert</Button>
+    <Button onClick={() => navigate("/explore")}>Explore </Button>
     </>
     }
     </>

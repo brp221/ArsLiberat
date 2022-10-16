@@ -36,37 +36,6 @@ return(
     <>  
     {/* <Logout/> */}
     <Box>  {/** className={classes.serviceBar} */ }
-          {/* <SearchBar
-            onChange={() => console.log("onChange")}
-            onRequestSearch={() => console.log("onRequestSearch")}
-            style={{ marginLeft: "+0px", width: 250 }}
-          /> */}
-          {/* <Button
-            className={classes.createServiceButton}
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              createNewService();
-            }}
-          >
-            Post New Service
-            <NoteAddOutlinedIcon />
-          </Button> */}
-
-          {/* <Filter      //refere to Geeks 2 the rescue Filter and Show ServiceListGrid
-            checkboxes={technologies}
-            setFilterIsActive={setFilterIsActive}
-            checkedItems={checkedTech}
-            setCheckedItems={setCheckedTech}
-            heading="Technology"
-          />
-          <Filter
-            checkboxes={OS}
-            setFilterIsActive={setFilterIsActive}
-            checkedItems={checkedOS}
-            setCheckedItems={setCheckedOS}
-            heading="OS"
-          /> */}
         </Box>
         <Grid container rowSpacing={1} columnSpacing={{ xs: 3, sm: 4, md: 4}}>{/**className={classes.root} */}
         {assetList && assetList.map((asset) => (

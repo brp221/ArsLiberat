@@ -134,14 +134,14 @@ export default function Card__NFT() {   //{NFT}
         />
         <CardMedia
             component="img" height="194"
-            image={nft.metadata.image} alt="Paella dish"
+            image={nft.cached_file_url} alt={nft.cached_file_url}
         />
         <CardContent>
             <Typography variant="body2" color="text.secondary"> 
             {nft.metadata.description}
             </Typography>
         </CardContent>
-        <Button onClick={() => navigate("/order-alert", {state: "someData"})}>Create Alert</Button>
+        <Button onClick={() => navigate("/order-alert", {state: {"nft": nft, "listings" : listings}})}>Create Alert</Button>
 
     </Card>
 

@@ -21,19 +21,18 @@ const useStyles = makeStyles({
 
 export default function MinionOrder() {
   const classes = useStyles();
-  const location = useLocation()
+  const location = useLocation();
    // data will be shared by navigate
-  const [minionType, setminionType] = useState('type 1');
+  const [minionType, setminionType] = useState(location["state"]["nft"] ? 'Listing Price Movement' : 'New Content');
   const [minion, setMinion] = useState({});  //set by the child components 
   
-  const updateMinion1 = 
   useEffect(() => {
+    console.log("passed info is ", location)
     console.log("minion: ", minion)
   },[minion]);
 
   const changeMinionType = (event) => {
-    console.log("passed info is ", location.state)
-    setMinion({})  //when the minionType changes, also reset the minion state >:)
+    setMinion({})  //when the minionType changes, reset the minion state >:)
     setminionType(event.target.value);
   };
 
@@ -69,9 +68,9 @@ return (
         onChange={changeMinionType}
         name="radio-buttons-group"
       >
-        <FormControlLabel value="type 1" control={<Radio />} label="type 1" />
-        <FormControlLabel value="type 2" control={<Radio />} label="type 2" />
-        <FormControlLabel value="type 3" control={<Radio />} label="type x coming soon " />
+        <FormControlLabel value="Listing Price Movement" control={<Radio />} label="Listing Price Movement" />
+        <FormControlLabel value="New Content" control={<Radio />} label="New Content" />
+        {/* <FormControlLabel value="type 3" control={<Radio />} label="type x coming soon " /> */}
       </RadioGroup>
     </FormControl>
     <Box
@@ -84,12 +83,12 @@ return (
     >
       <div>
         <div>
-          {minionType == "type 1" && 
-          <div><Type1 onChange={value => setMinion(value)}  /></div>
+          {minionType == "Listing Price Movement" && 
+          <div><Type1 onChange={value => setMinion(value)} order_metadata={location.state}  /></div>
           }
         </div>
-        {minionType == "type 2" &&
-          <div><Type2 onChange={value => setMinion(value)}  /></div>
+        {minionType == "New Content" &&
+          <div><Type2 onChange={value => setMinion(value)}  order_metadata={location.state} /></div>
           }
         <Button variant="contained" color="primary" onClick={createNewMinion}>
             Create Alert 

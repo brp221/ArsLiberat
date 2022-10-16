@@ -16,7 +16,7 @@ collectionRouter.get('/', async(req,res)=>{
       accept: 'application/json'
     }
   };
-  
+  //CONTRACT ADDRESS IS MISSING HERE !!! JOIN BY NAME WITH ANOTHER QUERY ?
   https.get(options, (resp) => {
     const chunks = [];
   
