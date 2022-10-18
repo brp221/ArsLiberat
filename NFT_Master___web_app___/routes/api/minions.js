@@ -19,25 +19,32 @@ minionRouter.get('/', async(req, res, next) => {
         console.log(collection)
         collection.push({"UserName":doc.data()["UserName"], "Name":doc.data()["Name"], "Minions":doc.data()["Minions"]})
       });
-    return res.status(201).json(collection);
+    return res.status(200).json(collection);
 });
 
 
 minionRouter.post('/', async(req, res, next)=>{
     //check that the user does not exceed their quota
 
-    console.log("request: ", req.body)
+    console.log("request: ", req.body);
+    console.log(JSON.stringify(req.body));
+    console.log(Buffer.from(JSON.stringify(req.body)));
+    console.log(req.body.metadata.minion_name);
+    const uri = "https://us-central1-nftzombies.cloudfunctions.net/price-motive/" // where should we say hello?
+
     //provision a jobs
     // Construct the request body.
     const job = {
         httpTarget: {
-          uri: schedulerClient.url,
+          uri: uri,
           httpMethod: 'POST',
-          body: req.body
+          body: btoa(JSON.stringify(req.body))
+          authentica // putting proj on hold, need to refactor to include pub sub https://towardsdatascience.com/how-to-schedule-a-python-script-on-google-cloud-721e331a9590
+          // body: Buffer.from(JSON.stringify(req.body)),
         },
-        schedule: '* * * * *',
+        schedule: '*/12 * * * *',
         timeZone: 'America/Los_Angeles',
-        name: "projects/nftzombies/locations/us-central1/jobs/" + req.body.Minion_Name
+        name: "projects/nftzombies/locations/us-central1/jobs/" + req.body.metadata.minion_name
     };
     const request = {
         parent: schedulerClient.parent,
@@ -53,7 +60,8 @@ minionRouter.post('/', async(req, res, next)=>{
       //description
       //metadata
       //user
-    return response
+      return res.status(201).json(response);
+
 })
 
 
@@ -81,7 +89,7 @@ minionRouter.get('/:name', async(req, res, next)=>{
   console.log(`Created job: ${response.name}`);
 
   // persist in the db ? 
-  return response
+  return res.status(200).json(response);
 })
 
 

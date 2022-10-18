@@ -40,7 +40,7 @@ collectionRouter.get('/trending/', async(req, res, next) => {
   var options = {
       url: 'https://api.rarify.tech/data/contracts',
       headers: {
-          'Authorization': 'Bearer d0a569d1-f90c-4789-817d-09c1bc024436',
+          'Authorization': `Bearer ${process.env.RARIFY_API_KEY}`,
           'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: 'insights_trends.period=90d&include=insights_trends&sort=-insights_trends.volume_change_percent' //&page[limit]=6
